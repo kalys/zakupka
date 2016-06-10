@@ -64,7 +64,7 @@ module Goszakup
 
     storage.save list
 
-    self.logger.info "Successfully invoked"
+    self.logger.info "Successfully invoked: #{list.count} #{new_list.count} #{found_list.count}"
   rescue
     self.logger.error $!.inspect
   end

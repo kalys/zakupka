@@ -32,7 +32,7 @@ module Goszakup
         "javax.faces.partial.event" => "page",
         "j_idt95:table_pagination" => "true",
         "j_idt95:table_first" => "0",
-        "j_idt95:table_rows" => "100",
+        "j_idt95:table_rows" => "1000",
         "j_idt95:table_encodeFeature" => "true",
         "j_idt95" => "j_idt95",
         "j_idt95:table_selection" => "",
