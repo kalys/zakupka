@@ -3,7 +3,7 @@ require 'mechanize'
 module Goszakup
   class ListFetcher
 
-    def fetch
+    def fetch offset, limit
       url = "http://zakupki.gov.kg/popp/view/order/list.xhtml"
 
       agent = Mechanize.new
@@ -31,8 +31,8 @@ module Goszakup
         "javax.faces.behavior.event" => "page",
         "javax.faces.partial.event" => "page",
         "j_idt95:table_pagination" => "true",
-        "j_idt95:table_first" => "0",
-        "j_idt95:table_rows" => "1000",
+        "j_idt95:table_first" => offset,
+        "j_idt95:table_rows" => limit,
         "j_idt95:table_encodeFeature" => "true",
         "j_idt95" => "j_idt95",
         "j_idt95:table_selection" => "",
@@ -46,7 +46,32 @@ module Goszakup
       doc = Nokogiri::HTML(rows_str)
 
       doc.css("tr").map do |tr|
-        Purchase.new tr.css("td[1]").text.strip.to_i, tr.attr("data-rk").to_i, tr.css("td[4]").text.strip
+        purchase_id = tr.css("td[1]").text.strip.to_i
+        permalink_id = tr.attr("data-rk").to_i
+        title = tr.css("td[4]").text.strip
+        owner = tr.css("td[2]").text.strip
+        price = tr.css("td[6]").text.strip
+        begin
+          datetime_string = tr.css("td[7]").text.strip
+          if datetime_string
+            publish_datetime = DateTime.parse "#{datetime_string} +0600"
+            publish_datetime = publish_datetime.new_offset(6.0/24)
+          end
+        rescue ArgumentError
+        end
+
+        begin
+          datetime_string = tr.css("td[8]").text.strip
+          if datetime_string
+            due_datetime = DateTime.parse "#{datetime_string} +0600"
+            due_datetime = due_datetime.new_offset(6.0/24)
+          end
+        rescue ArgumentError
+        end
+
+        Purchase.new purchase_id, permalink_id, title, owner, price,
+          publish_datetime, due_datetime
+
       end.reverse
     end
   end

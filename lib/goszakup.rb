@@ -32,7 +32,7 @@ module Goszakup
   end
 
   def self.invoke
-    list = ListFetcher.new.fetch
+    list = ListFetcher.new.fetch 0, 1000
     storage = Storage.new
     new_list = storage.fetch_new list
     analyzer = WordAnalyzer.new
@@ -67,6 +67,20 @@ module Goszakup
     self.logger.info "Successfully invoked: #{list.count} #{new_list.count} #{found_list.count}"
   rescue
     self.logger.error $!.inspect
+  end
+
+  def self.fetch_all
+    fetcher = ListFetcher.new
+    offset = 0
+    limit = 1000
+    step = 0
+
+    while list = fetcher.fetch(step * limit, limit) do
+      if block_given?
+        yield list
+      end
+      step += 1
+    end
   end
 
 end

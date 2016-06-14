@@ -5,6 +5,8 @@ gem 'twitter'
 gem 'dotenv'
 gem 'google_url_shortener'
 gem 'rufus-scheduler'
+gem 'sequel'
+gem 'sqlite3'
 
 group :test do
   gem 'rspec'
